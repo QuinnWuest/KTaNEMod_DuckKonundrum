@@ -934,7 +934,7 @@ public class duckKonundrumScript : MonoBehaviour
                                     seatColors[(duckPos + pokey) % 6] = okeydokey;
                                     DebugMsg("The Hokey Pokey rule activated! The seat of the chair " + ((duckPos + pokey) % 6) + " chair" + ((duckPos + pokey) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
                                 }
-                                if (foreheadActivated && foreheadRule == 3)
+                                if (foreheadActivated && foreheadRule == 4)
                                 {
                                     foreheadLs++;
                                     DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
@@ -951,7 +951,7 @@ public class duckKonundrumScript : MonoBehaviour
                                     bottomColors[(duckPos + pokey) % 6] = okeydokey;
                                     DebugMsg("The Hokey Pokey rule activated! The bottom of the chair " + ((duckPos + pokey) % 6) + " chair" + ((duckPos + pokey) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
                                 }
-                                if (foreheadActivated && foreheadRule == 3)
+                                if (foreheadActivated && foreheadRule == 4)
                                 {
                                     foreheadLs++;
                                     DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
@@ -1058,7 +1058,7 @@ public class duckKonundrumScript : MonoBehaviour
                     seatColors[(duckPos + oh) % 6] = stinky;
                     DebugMsg("The whoopee cushion rule activated! The seat of the chair " + ((duckPos + oh) % 6) + " chair" + ((duckPos + oh) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[stinky] + ".");
                 }
-                if (foreheadActivated && foreheadRule == 3)
+                if (foreheadActivated && foreheadRule == 4)
                 {
                     foreheadLs++;
                     DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
@@ -1075,7 +1075,7 @@ public class duckKonundrumScript : MonoBehaviour
                     bottomColors[(duckPos + oh) % 6] = stinky;
                     DebugMsg("The whoopee cushion rule activated! The bottom of the chair " + ((duckPos + oh) % 6) + " chair" + ((duckPos + oh) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[stinky] + ".");
                 }
-                if (foreheadActivated && foreheadRule == 3)
+                if (foreheadActivated && foreheadRule == 4)
                 {
                     foreheadLs++;
                     DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
