@@ -972,7 +972,7 @@ public class duckKonundrumScript : MonoBehaviour
                                 if (hokey == 0)
                                 {
                                     bottomColors[(currentPos + pokey) % 6] = okeydokey;
-                                    StageDebugMsg("The Hokey Pokey rule activated! The bottom of the chair " + ((currentPos + pokey) % 6) + " chair" + ((currentPos + pokey) % 6) + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
+                                    StageDebugMsg("The Hokey Pokey rule activated! The bottom of the chair " + ((currentPos + pokey) % 6) + " chair" + ((currentPos + pokey) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
                                 }
                                 else
                                 {
