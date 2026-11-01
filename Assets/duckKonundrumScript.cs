@@ -112,6 +112,9 @@ public class duckKonundrumScript : MonoBehaviour
     private int correctAnswer = 0;
     private int subjectIndex = 0;
 
+    private readonly List<string> stageLogs = new List<string>();
+    private bool collectingStageLogs = false;
+
     void Start()
     {
         _moduleId = _moduleIdCounter++;
@@ -219,8 +222,19 @@ public class duckKonundrumScript : MonoBehaviour
         StartCoroutine(CheckForSolves());
     }
 
+    void StageDebugMsg(string message)
+    {
+        if (collectingStageLogs)
+            stageLogs.Add(message);
+        else
+            DebugMsg(message);
+    }
+
     void GenerateStage()
     {
+        stageLogs.Clear();
+        collectingStageLogs = true;
+
         if (currentStage == 0)
         {
             currentPos = Random.Range(0, 6);
@@ -269,13 +283,13 @@ public class duckKonundrumScript : MonoBehaviour
                         seat1 = GenerateSeat(4);
                     currentPos = seat1;
                     stageText = "Move to " + seatString + ".";
-                    DebugMsg("You are now in the chair " + currentPos + " chair" + (currentPos == 1 ? "" : "s") + " clockwise from the armchair.");
+                    StageDebugMsg("You are now in the chair " + currentPos + " chair" + (currentPos == 1 ? "" : "s") + " clockwise from the armchair.");
                     if (currentPos == whoopeeCushionPos)
                         SitOnWhoopeeCushion();
                     if (foreheadActivated && foreheadRule == 0)
                     {
                         foreheadLs++;
-                        DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                        StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                     }
                     break;
                 case 1: // Move the duck to a different chair.
@@ -286,13 +300,13 @@ public class duckKonundrumScript : MonoBehaviour
                     stageText = "Move the duck to " + seatString + ".";
                     if (Random.Range(0, 5) == 0)
                         stageText += " Please be careful with the duck.";
-                    DebugMsg("The duck is now in the chair " + duckPos + " chair" + (duckPos == 1 ? "" : "s") + " clockwise from the armchair.");
+                    StageDebugMsg("The duck is now in the chair " + duckPos + " chair" + (duckPos == 1 ? "" : "s") + " clockwise from the armchair.");
                     if (duckPos == whoopeeCushionPos)
                         SitOnWhoopeeCushion();
                     if (foreheadActivated && foreheadRule == 1)
                     {
                         foreheadLs++;
-                        DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                        StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                     }
                     break;
                 case 2: // Fill a watering can with paint.
@@ -305,11 +319,11 @@ public class duckKonundrumScript : MonoBehaviour
                     }
                     wateringCanContents[can1] = MixColors(wateringCanContents[can1], color1);
                     stageText = "Fill " + canString + " with " + colorString + ".";
-                    DebugMsg("The " + sizes[can1] + " watering can is now filled with " + possibleColors[wateringCanContents[can1]] + " paint.");
+                    StageDebugMsg("The " + sizes[can1] + " watering can is now filled with " + possibleColors[wateringCanContents[can1]] + " paint.");
                     if (foreheadActivated && foreheadRule == 3)
                     {
                         foreheadLs++;
-                        DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                        StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                     }
                     break;
                 case 3: // Fill a watering can with paint from a watering can.
@@ -324,11 +338,11 @@ public class duckKonundrumScript : MonoBehaviour
                             can1 = GenerateCan();
                         wateringCanContents[can2] = MixColors(wateringCanContents[can1], wateringCanContents[can2]);
                         stageText = "Fill " + canString2 + " with some paint from " + canString + " (if that can is empty, do nothing).";
-                        DebugMsg("The " + sizes[can2] + " watering can is now filled with " + possibleColors[wateringCanContents[can2]] + " paint.");
+                        StageDebugMsg("The " + sizes[can2] + " watering can is now filled with " + possibleColors[wateringCanContents[can2]] + " paint.");
                         if (foreheadActivated && foreheadRule == 3 && wateringCanContents[can1] != 0)
                         {
                             foreheadLs++;
-                            DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                            StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                         }
                     }
 
@@ -355,7 +369,7 @@ public class duckKonundrumScript : MonoBehaviour
                                 stageText = "Drink all of the paint in " + canString + ".";
                                 break;
                         }
-                        DebugMsg("The " + sizes[can1] + " watering can is now filled with " + possibleColors[wateringCanContents[can1]] + " paint.");
+                        StageDebugMsg("The " + sizes[can1] + " watering can is now filled with " + possibleColors[wateringCanContents[can1]] + " paint.");
                     }
                     break;
                 case 5: // Wash a watering can.
@@ -368,7 +382,7 @@ public class duckKonundrumScript : MonoBehaviour
                             can1 = GenerateCan();
                         wateringCanColors[can1] = 0;
                         stageText = "Wash the paint off of " + canString + ".";
-                        DebugMsg("The " + sizes[can1] + " watering can is now " + possibleColors[wateringCanColors[can1]] + "-colored.");
+                        StageDebugMsg("The " + sizes[can1] + " watering can is now " + possibleColors[wateringCanColors[can1]] + "-colored.");
                     }
                     break;
                 case 6: // Pour all of the paint from one watering can to another.
@@ -388,15 +402,18 @@ public class duckKonundrumScript : MonoBehaviour
                             can1 = GenerateCan();
                         wateringCanContents[can1] = MixColors(wateringCanContents[can1], wateringCanContents[can2]);
                         wateringCanContents[can2] = 0;
+
+                        StageDebugMsg("The " + sizes[can1] + " watering can is now filled with " + possibleColors[wateringCanContents[can1]] + " paint.");
+                        StageDebugMsg("The " + sizes[can2] + " watering can now has nothing inside.");
+
                         stageText = "Dump all of the paint from " + canString2 + " into " + canString + ".";
                         if (foreheadActivated && foreheadRule == 3)
                         {
                             foreheadLs++;
-                            DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                            StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                         }
                     }
 
-                    DebugMsg("The " + sizes[can1] + " watering can is now filled with " + possibleColors[wateringCanContents[can1]] + " paint.");
                     break;
                 case 7: // Paint a watering can.
                     color1 = GeneratePaint(false);
@@ -408,11 +425,11 @@ public class duckKonundrumScript : MonoBehaviour
                     }
                     wateringCanColors[can1] = color1;
                     stageText = "Using " + colorString + ", paint " + canString + ".";
-                    DebugMsg("The " + sizes[can1] + " watering can is now " + possibleColors[color1] + "-colored.");
+                    StageDebugMsg("The " + sizes[can1] + " watering can is now " + possibleColors[color1] + "-colored.");
                     if (foreheadActivated && foreheadRule == 2)
                     {
                         foreheadLs++;
-                        DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                        StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                     }
                     break;
                 case 8: // Paint one of your body parts
@@ -433,11 +450,11 @@ public class duckKonundrumScript : MonoBehaviour
                         bodyPartColors[2] = bodyPartColors[3] = color1;
 
                     stageText = "Paint " + bodyPartString + " with " + colorString + ".";
-                    DebugMsg("Now " + bodyPartString + " is/are " + possibleColors[color1] + "-colored.");
+                    StageDebugMsg("Now " + bodyPartString + " is/are " + possibleColors[color1] + "-colored.");
                     if (foreheadActivated && foreheadRule == 5)
                     {
                         foreheadLs++;
-                        DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                        StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                     }
                     break;
                 case 9: // Paint the seat of a chair.
@@ -451,11 +468,11 @@ public class duckKonundrumScript : MonoBehaviour
 
                     seatColors[seat1 % 6] = color1;
                     stageText = "Using " + colorString + ", paint the seat of " + seatString + ".";
-                    DebugMsg("The seat of the chair " + (seat1 % 6) + " chair" + (seat1 % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[color1] + "-colored.");
+                    StageDebugMsg("The seat of the chair " + (seat1 % 6) + " chair" + (seat1 % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[color1] + "-colored.");
                     if (foreheadActivated && foreheadRule == 4)
                     {
                         foreheadLs++;
-                        DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                        StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                     }
                     break;
                 case 10: // Paint the bottom of a chair.
@@ -469,11 +486,11 @@ public class duckKonundrumScript : MonoBehaviour
 
                     bottomColors[seat1 % 6] = color1;
                     stageText = "Using " + colorString + ", paint the bottom of " + seatString + ".";
-                    DebugMsg("The bottom of the chair " + (seat1 % 6) + " chair" + (seat1 % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[color1] + "-colored.");
+                    StageDebugMsg("The bottom of the chair " + (seat1 % 6) + " chair" + (seat1 % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[color1] + "-colored.");
                     if (foreheadActivated && foreheadRule == 4)
                     {
                         foreheadLs++;
-                        DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                        StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                     }
                     break;
                 case 11: // Paint a number on the back of a chair.
@@ -490,11 +507,11 @@ public class duckKonundrumScript : MonoBehaviour
 
                     backNumbers[seat1 % 6] = number1;
                     backColors[seat1 % 6] = color1;
-                    DebugMsg("The back of the chair " + (seat1 % 6) + " chair" + (seat1 % 6 == 1 ? "" : "s") + " clockwise from the armchair now has a " + possibleColors[color1] + "-colored " + number1 + " on it.");
+                    StageDebugMsg("The back of the chair " + (seat1 % 6) + " chair" + (seat1 % 6 == 1 ? "" : "s") + " clockwise from the armchair now has a " + possibleColors[color1] + "-colored " + number1 + " on it.");
                     if (foreheadActivated && foreheadRule == 4)
                     {
                         foreheadLs++;
-                        DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                        StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                     }
                     break;
                 case 12: // Wash a body part.
@@ -508,7 +525,7 @@ public class duckKonundrumScript : MonoBehaviour
                         bodyPartColors[bodyPart1] = 0;
 
                         stageText = "Wash the paint off of " + bodyParts[bodyPart1] + ".";
-                        DebugMsg("Now " + bodyParts[bodyPart1] + " is/are unpainted.");
+                        StageDebugMsg("Now " + bodyParts[bodyPart1] + " is/are unpainted.");
                     }
                     break;
                 case 13: // Sit/stand/do a handstand on the chair.
@@ -525,7 +542,7 @@ public class duckKonundrumScript : MonoBehaviour
                         duckName = duckNames[Random.Range(0, duckNames.Length)];
                         originalDuckName = duckName;
                         stageText = "Let's name the duck " + duckName + ".";
-                        DebugMsg("The duck's name is " + duckName + ".");
+                        StageDebugMsg("The duck's name is " + duckName + ".");
                     }
 
                     else // if the duck already has a name, change the name
@@ -537,14 +554,14 @@ public class duckKonundrumScript : MonoBehaviour
                                     goto default;
                                 duckName += " Jr";
                                 stageText = "Add Jr. to the end of the duck's name.";
-                                DebugMsg("The duck's name is " + duckName + ".");
+                                StageDebugMsg("The duck's name is " + duckName + ".");
                                 break;
                             case 1: // add Dr to the start of its name
                                 if (duckName.StartsWith("Dr"))
                                     goto default;
                                 duckName = "Dr " + duckName;
                                 stageText = "Add Dr. to the start of the duck's name.";
-                                DebugMsg("The duck's name is " + duckName + ".");
+                                StageDebugMsg("The duck's name is " + duckName + ".");
                                 break;
                             case 2: // remove vowels from the duck's name
                                 var tempDuckName = duckName.Where(a => !"AEIOUaeiou".Contains(a)).Join("");
@@ -552,7 +569,7 @@ public class duckKonundrumScript : MonoBehaviour
                                     goto default;
                                 duckName = tempDuckName;
                                 stageText = "Remove all vowels from the duck's name as punishment. (Y is not considered to be a vowel.)";
-                                DebugMsg("The duck's name is " + duckName + ".");
+                                StageDebugMsg("The duck's name is " + duckName + ".");
                                 break;
                             default: // default to painting a body part
                                 color1 = GeneratePaint(false);
@@ -572,11 +589,11 @@ public class duckKonundrumScript : MonoBehaviour
                                     bodyPartColors[2] = bodyPartColors[3] = color1;
 
                                 stageText = "Paint " + bodyPartString + " with " + colorString + ".";
-                                DebugMsg("Now " + bodyPartString + " is/are " + possibleColors[color1] + "-colored.");
+                                StageDebugMsg("Now " + bodyPartString + " is/are " + possibleColors[color1] + "-colored.");
                                 if (foreheadActivated && foreheadRule == 5)
                                 {
                                     foreheadLs++;
-                                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                                 }
                                 break;
                         }
@@ -661,7 +678,7 @@ public class duckKonundrumScript : MonoBehaviour
                                 break;
                         }
 
-                        DebugMsg("The whoopee cushion is on the chair " + whoopeeCushionPos + " chair" + (whoopeeCushionPos == 1 ? "" : "s") + " clockwise from the armchair.");
+                        StageDebugMsg("The whoopee cushion is on the chair " + whoopeeCushionPos + " chair" + (whoopeeCushionPos == 1 ? "" : "s") + " clockwise from the armchair.");
                     }
                     else if (Random.Range(0, 2) == 0) // move the cushion
                     {
@@ -752,7 +769,7 @@ public class duckKonundrumScript : MonoBehaviour
                                 break;
                         }
 
-                        DebugMsg("The whoopee cushion is on the chair " + whoopeeCushionPos + " chair" + (whoopeeCushionPos == 1 ? "" : "s") + " clockwise from the armchair.");
+                        StageDebugMsg("The whoopee cushion is on the chair " + whoopeeCushionPos + " chair" + (whoopeeCushionPos == 1 ? "" : "s") + " clockwise from the armchair.");
                     }
 
                     break;
@@ -891,13 +908,13 @@ public class duckKonundrumScript : MonoBehaviour
                                     currentPos = (currentPos + (hokey - 6) * -1) % 6;
                                 else
                                     currentPos = (currentPos + hokey) % 6;
-                                DebugMsg("The Hokey Pokey rule activated! You are now in the chair " + currentPos + " chair" + (currentPos == 1 ? "" : "s") + " clockwise from the armchair.");
+                                StageDebugMsg("The Hokey Pokey rule activated! You are now in the chair " + currentPos + " chair" + (currentPos == 1 ? "" : "s") + " clockwise from the armchair.");
                                 if (currentPos == whoopeeCushionPos)
                                     SitOnWhoopeeCushion();
                                 if (foreheadActivated && foreheadRule == 0)
                                 {
                                     foreheadLs++;
-                                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                                 }
                                 break;
                             case 1: // move the duck to a different chair :OOOO
@@ -905,66 +922,66 @@ public class duckKonundrumScript : MonoBehaviour
                                     duckPos = (duckPos + (hokey - 6) * -1) % 6;
                                 else
                                     duckPos = (duckPos + hokey) % 6;
-                                DebugMsg("The Hokey Pokey rule activated! The duck is now in the chair " + duckPos + "chair" + (duckPos == 1 ? "" : "s") + " clockwise from the armchair.");
+                                StageDebugMsg("The Hokey Pokey rule activated! The duck is now in the chair " + duckPos + "chair" + (duckPos == 1 ? "" : "s") + " clockwise from the armchair.");
                                 if (duckPos == whoopeeCushionPos)
                                     SitOnWhoopeeCushion();
                                 if (foreheadActivated && foreheadRule == 1)
                                 {
                                     foreheadLs++;
-                                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                                 }
                                 break;
                             case 2: // fill a can with paint from another can! poggers!
                                 wateringCanContents[hokey] = MixColors(wateringCanContents[hokey], wateringCanContents[(hokey + pokey) % 3]);
-                                DebugMsg("The Hokey Pokey rule activated! The " + sizes[hokey] + " watering can is now filled with " + possibleColors[wateringCanContents[hokey]] + " paint.");
+                                StageDebugMsg("The Hokey Pokey rule activated! The " + sizes[hokey] + " watering can is now filled with " + possibleColors[wateringCanContents[hokey]] + " paint.");
                                 if (foreheadActivated && foreheadRule == 3 && wateringCanContents[(hokey + pokey) % 3] != 0)
                                 {
                                     foreheadLs++;
-                                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                                 }
                                 break;
                             case 3: // paint a seat! wow!
                                 if (hokey == 0)
                                 {
                                     seatColors[(currentPos + pokey) % 6] = okeydokey;
-                                    DebugMsg("The Hokey Pokey rule activated! The seat of the chair " + ((currentPos + pokey) % 6) + " chair" + ((currentPos + pokey) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
+                                    StageDebugMsg("The Hokey Pokey rule activated! The seat of the chair " + ((currentPos + pokey) % 6) + " chair" + ((currentPos + pokey) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
                                 }
                                 else
                                 {
                                     seatColors[(duckPos + pokey) % 6] = okeydokey;
-                                    DebugMsg("The Hokey Pokey rule activated! The seat of the chair " + ((duckPos + pokey) % 6) + " chair" + ((duckPos + pokey) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
+                                    StageDebugMsg("The Hokey Pokey rule activated! The seat of the chair " + ((duckPos + pokey) % 6) + " chair" + ((duckPos + pokey) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
                                 }
                                 if (foreheadActivated && foreheadRule == 4)
                                 {
                                     foreheadLs++;
-                                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                                 }
                                 break;
                             case 4: // paint a bottom! woah!
                                 if (hokey == 0)
                                 {
                                     bottomColors[(currentPos + pokey) % 6] = okeydokey;
-                                    DebugMsg("The Hokey Pokey rule activated! The bottom of the chair " + ((currentPos + pokey) % 6) + " chair" + ((currentPos + pokey) % 6) + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
+                                    StageDebugMsg("The Hokey Pokey rule activated! The bottom of the chair " + ((currentPos + pokey) % 6) + " chair" + ((currentPos + pokey) % 6) + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
                                 }
                                 else
                                 {
                                     bottomColors[(duckPos + pokey) % 6] = okeydokey;
-                                    DebugMsg("The Hokey Pokey rule activated! The bottom of the chair " + ((duckPos + pokey) % 6) + " chair" + ((duckPos + pokey) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
+                                    StageDebugMsg("The Hokey Pokey rule activated! The bottom of the chair " + ((duckPos + pokey) % 6) + " chair" + ((duckPos + pokey) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[okeydokey] + ".");
                                 }
                                 if (foreheadActivated && foreheadRule == 4)
                                 {
                                     foreheadLs++;
-                                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                                 }
                                 break;
                             case 5: // paint a body part with paint from a can! super epic!
                                 if (wateringCanContents[pokey] != 0)
                                     bodyPartColors[hokey] = wateringCanContents[pokey];
-                                DebugMsg("The Hokey Pokey rule activated! Now " + bodyParts[hokey] + " is painted with " + possibleColors[bodyPartColors[hokey]] + " paint.");
+                                StageDebugMsg("The Hokey Pokey rule activated! Now " + bodyParts[hokey] + " is painted with " + possibleColors[bodyPartColors[hokey]] + " paint.");
                                 if (foreheadActivated && foreheadRule == 5)
                                 {
                                     foreheadLs++;
-                                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                                 }
                                 break;
                         }
@@ -1017,11 +1034,11 @@ public class duckKonundrumScript : MonoBehaviour
                     currentPos = (currentPos + uh) % 6;
                 if (currentPos == whoopeeCushionPos)
                     SitOnWhoopeeCushion();
-                DebugMsg("The whoopee cushion rule activated! You are now in the chair " + currentPos + " chair" + (currentPos == 1 ? "" : "s") + " clockwise from the armchair.");
+                StageDebugMsg("The whoopee cushion rule activated! You are now in the chair " + currentPos + " chair" + (currentPos == 1 ? "" : "s") + " clockwise from the armchair.");
                 if (foreheadActivated && foreheadRule == 0)
                 {
                     foreheadLs++;
-                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                 }
                 break;
             case 1: // move the duck to a different chair :OOOO
@@ -1031,64 +1048,64 @@ public class duckKonundrumScript : MonoBehaviour
                     duckPos = (duckPos + uh) % 6;
                 if (duckPos == whoopeeCushionPos)
                     SitOnWhoopeeCushion();
-                DebugMsg("The whoopee cushion rule activated! The duck is now in the chair " + duckPos + " chair" + (duckPos == 1 ? "" : "s") + " clockwise from the armchair.");
+                StageDebugMsg("The whoopee cushion rule activated! The duck is now in the chair " + duckPos + " chair" + (duckPos == 1 ? "" : "s") + " clockwise from the armchair.");
                 if (foreheadActivated && foreheadRule == 1)
                 {
                     foreheadLs++;
-                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                 }
                 break;
             case 2: // fill a can with paint from another can! poggers!
                 wateringCanContents[uh] = MixColors(wateringCanContents[uh], wateringCanContents[(uh + oh) % 3]);
-                DebugMsg("The whoopee cushion rule activated! The " + sizes[uh] + " watering can is now filled with " + possibleColors[wateringCanContents[uh]] + " paint.");
+                StageDebugMsg("The whoopee cushion rule activated! The " + sizes[uh] + " watering can is now filled with " + possibleColors[wateringCanContents[uh]] + " paint.");
                 if (foreheadActivated && foreheadRule == 3 && wateringCanContents[(hokey + pokey) % 3] != 0)
                 {
                     foreheadLs++;
-                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                 }
                 break;
             case 3: // paint a seat! wow!
                 if (uh == 0)
                 {
                     seatColors[(currentPos + oh) % 6] = stinky;
-                    DebugMsg("The whoopee cushion rule activated! The seat of the chair " + ((currentPos + oh) % 6) + " chair" + ((currentPos + oh) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[stinky] + ".");
+                    StageDebugMsg("The whoopee cushion rule activated! The seat of the chair " + ((currentPos + oh) % 6) + " chair" + ((currentPos + oh) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[stinky] + ".");
                 }
                 else
                 {
                     seatColors[(duckPos + oh) % 6] = stinky;
-                    DebugMsg("The whoopee cushion rule activated! The seat of the chair " + ((duckPos + oh) % 6) + " chair" + ((duckPos + oh) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[stinky] + ".");
+                    StageDebugMsg("The whoopee cushion rule activated! The seat of the chair " + ((duckPos + oh) % 6) + " chair" + ((duckPos + oh) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[stinky] + ".");
                 }
                 if (foreheadActivated && foreheadRule == 4)
                 {
                     foreheadLs++;
-                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                 }
                 break;
             case 4: // paint a bottom! woah!
                 if (uh == 0)
                 {
                     bottomColors[(currentPos + oh) % 6] = stinky;
-                    DebugMsg("The whoopee cushion rule activated! The bottom of the chair " + ((currentPos + oh) % 6) + " chair" + ((currentPos + oh) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[stinky] + ".");
+                    StageDebugMsg("The whoopee cushion rule activated! The bottom of the chair " + ((currentPos + oh) % 6) + " chair" + ((currentPos + oh) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[stinky] + ".");
                 }
                 else
                 {
                     bottomColors[(duckPos + oh) % 6] = stinky;
-                    DebugMsg("The whoopee cushion rule activated! The bottom of the chair " + ((duckPos + oh) % 6) + " chair" + ((duckPos + oh) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[stinky] + ".");
+                    StageDebugMsg("The whoopee cushion rule activated! The bottom of the chair " + ((duckPos + oh) % 6) + " chair" + ((duckPos + oh) % 6 == 1 ? "" : "s") + " clockwise from the armchair is now " + possibleColors[stinky] + ".");
                 }
                 if (foreheadActivated && foreheadRule == 4)
                 {
                     foreheadLs++;
-                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                 }
                 break;
             case 5: // paint a body part with paint from a can! super epic!
                 if (wateringCanContents[oh] != 0)
                     bodyPartColors[uh] = wateringCanContents[oh];
-                DebugMsg("The Hokey Pokey rule activated! Now " + bodyParts[uh] + " is painted with " + possibleColors[bodyPartColors[uh]] + " paint.");
+                StageDebugMsg("The Hokey Pokey rule activated! Now " + bodyParts[uh] + " is painted with " + possibleColors[bodyPartColors[uh]] + " paint.");
                 if (foreheadActivated && foreheadRule == 5)
                 {
                     foreheadLs++;
-                    DebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
+                    StageDebugMsg("You paint another L on your forehead. There are now " + foreheadLs + " Ls on your forehead.");
                 }
                 break;
         }
@@ -2049,6 +2066,12 @@ public class duckKonundrumScript : MonoBehaviour
             btnTexts[2].text = btnTexts[3].text = "";
         DebugMsg("Displaying Stage " + displayedStage + ". It says:");
         DebugMsg("\"" + textToDisplay + "\"");
+
+        foreach (string message in stageLogs)
+            DebugMsg(message);
+        stageLogs.Clear();
+        collectingStageLogs = false;
+
         DebugMsg("===============================================");
 
         var waitTime = 1f;
