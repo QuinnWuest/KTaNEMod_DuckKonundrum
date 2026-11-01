@@ -230,6 +230,16 @@ public class duckKonundrumScript : MonoBehaviour
             DebugMsg(message);
     }
 
+    void LogWhoopeeCushionPosition()
+    {
+        StageDebugMsg("The whoopee cushion is now on " + (whoopeeCushionPos == 0 ? "the armchair." : "the chair " + whoopeeCushionPos + " chair" + (whoopeeCushionPos == 1 ? "" : "s") + " clockwise from the armchair."));
+    }
+
+    string BodyPartIsOrAre(int part)
+    {
+        return part == 4 || part == 5 || part == 6 || part == 7 ? "are" : "is";
+    }
+
     void GenerateStage()
     {
         stageLogs.Clear();
@@ -382,7 +392,7 @@ public class duckKonundrumScript : MonoBehaviour
                             can1 = GenerateCan();
                         wateringCanColors[can1] = 0;
                         stageText = "Wash the paint off of " + canString + ".";
-                        StageDebugMsg("The " + sizes[can1] + " watering can is now " + possibleColors[wateringCanColors[can1]] + "-colored.");
+                        StageDebugMsg("The " + sizes[can1] + " watering can is now " + (wateringCanColors[can1] == 0 ? "unpainted." : possibleColors[wateringCanColors[can1]] + "-colored."));
                     }
                     break;
                 case 6: // Pour all of the paint from one watering can to another.
@@ -425,7 +435,7 @@ public class duckKonundrumScript : MonoBehaviour
                     }
                     wateringCanColors[can1] = color1;
                     stageText = "Using " + colorString + ", paint " + canString + ".";
-                    StageDebugMsg("The " + sizes[can1] + " watering can is now " + possibleColors[color1] + "-colored.");
+                    StageDebugMsg("The " + sizes[can1] + " watering can is now " + (wateringCanColors[can1] == 0 ? "unpainted." : possibleColors[wateringCanColors[can1]] + "-colored."));
                     if (foreheadActivated && foreheadRule == 2)
                     {
                         foreheadLs++;
@@ -450,7 +460,7 @@ public class duckKonundrumScript : MonoBehaviour
                         bodyPartColors[2] = bodyPartColors[3] = color1;
 
                     stageText = "Paint " + bodyPartString + " with " + colorString + ".";
-                    StageDebugMsg("Now " + bodyPartString + " is/are " + possibleColors[color1] + "-colored.");
+                    StageDebugMsg("Now " + bodyPartString + " " + BodyPartIsOrAre(bodyPart1) + " " + possibleColors[color1] + "-colored.");
                     if (foreheadActivated && foreheadRule == 5)
                     {
                         foreheadLs++;
@@ -525,7 +535,7 @@ public class duckKonundrumScript : MonoBehaviour
                         bodyPartColors[bodyPart1] = 0;
 
                         stageText = "Wash the paint off of " + bodyParts[bodyPart1] + ".";
-                        StageDebugMsg("Now " + bodyParts[bodyPart1] + " is/are unpainted.");
+                        StageDebugMsg("Now " + bodyParts[bodyPart1] + " " + BodyPartIsOrAre(bodyPart1) + " unpainted.");
                     }
                     break;
                 case 13: // Sit/stand/do a handstand on the chair.
@@ -589,7 +599,7 @@ public class duckKonundrumScript : MonoBehaviour
                                     bodyPartColors[2] = bodyPartColors[3] = color1;
 
                                 stageText = "Paint " + bodyPartString + " with " + colorString + ".";
-                                StageDebugMsg("Now " + bodyPartString + " is/are " + possibleColors[color1] + "-colored.");
+                                StageDebugMsg("Now " + bodyPartString + " " + BodyPartIsOrAre(bodyPart1) + " " + possibleColors[color1] + "-colored.");
                                 if (foreheadActivated && foreheadRule == 5)
                                 {
                                     foreheadLs++;
@@ -677,8 +687,7 @@ public class duckKonundrumScript : MonoBehaviour
                                 }
                                 break;
                         }
-
-                        StageDebugMsg("The whoopee cushion is on the chair " + whoopeeCushionPos + " chair" + (whoopeeCushionPos == 1 ? "" : "s") + " clockwise from the armchair.");
+                        LogWhoopeeCushionPosition();
                     }
                     else if (Random.Range(0, 2) == 0) // move the cushion
                     {
@@ -686,6 +695,8 @@ public class duckKonundrumScript : MonoBehaviour
                         stageText = "Move the whoopee cushion to " + seatString + ". If this causes the whoopee cushion to move to your/the duck's chair, activate the whoopee cushion's rule.";
                         if (whoopeeCushionPos == currentPos || whoopeeCushionPos == duckPos)
                             SitOnWhoopeeCushion();
+
+                        LogWhoopeeCushionPosition();
                     }
                     else
                     {
@@ -769,7 +780,7 @@ public class duckKonundrumScript : MonoBehaviour
                                 break;
                         }
 
-                        StageDebugMsg("The whoopee cushion is on the chair " + whoopeeCushionPos + " chair" + (whoopeeCushionPos == 1 ? "" : "s") + " clockwise from the armchair.");
+                        LogWhoopeeCushionPosition();
                     }
 
                     break;
