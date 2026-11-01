@@ -933,7 +933,7 @@ public class duckKonundrumScript : MonoBehaviour
                                     duckPos = (duckPos + (hokey - 6) * -1) % 6;
                                 else
                                     duckPos = (duckPos + hokey) % 6;
-                                StageDebugMsg("The Hokey Pokey rule activated! The duck is now in the chair " + duckPos + "chair" + (duckPos == 1 ? "" : "s") + " clockwise from the armchair.");
+                                StageDebugMsg("The Hokey Pokey rule activated! The duck is now in the chair " + duckPos + " chair" + (duckPos == 1 ? "" : "s") + " clockwise from the armchair.");
                                 if (duckPos == whoopeeCushionPos)
                                     SitOnWhoopeeCushion();
                                 if (foreheadActivated && foreheadRule == 1)
