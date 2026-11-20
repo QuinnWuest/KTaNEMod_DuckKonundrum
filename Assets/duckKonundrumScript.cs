@@ -800,6 +800,10 @@ public class duckKonundrumScript : MonoBehaviour
                             placeholder = Random.Range(1, foreheadLs);
                             foreheadLs -= placeholder;
                             stageText = "Wash " + placeholder + " of the Ls off of your forehead.";
+                            if (foreheadLs == 1)
+                                StageDebugMsg("There is now 1 L on your forehead.");
+                            else
+                                StageDebugMsg("There are now " + foreheadLs + " Ls on your forehead.");
                         }
 
                         else
@@ -807,6 +811,10 @@ public class duckKonundrumScript : MonoBehaviour
                             placeholder = GenerateNumber(12);
                             foreheadLs += placeholder;
                             stageText = "Paint " + numberString + " Ls on your forehead, in the color that you're supposed to be painting them with.";
+                            if (foreheadLs == 1)
+                                StageDebugMsg("There is now 1 L on your forehead.");
+                            else
+                                StageDebugMsg("There are now " + foreheadLs + " Ls on your forehead.");
                         }
                     }
 
